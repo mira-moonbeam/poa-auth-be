@@ -3,7 +3,7 @@ FROM golang:1.22 AS build-stage
 
 WORKDIR /app
 
-COPY . .
+COPY ../.. .
 
 RUN go mod download
 
@@ -17,7 +17,7 @@ WORKDIR /app
 
 COPY --from=build-stage /docker-ploutline-auth /docker-ploutline-auth
 
-COPY .env .
+COPY ../../.env .
 
 EXPOSE 8081
 
