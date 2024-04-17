@@ -1,0 +1,8 @@
+DB_HOST: localhost
+DB_DRIVER: postgres
+DB_USER: postgres
+DB_PASSWORD: postgres
+DB_NAME: postgres
+DB_PORT: 5432
+API_SECRET: supersecretkey
+TOKEN_HOUR_LIFESPAN: 1

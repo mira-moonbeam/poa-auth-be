@@ -4,14 +4,26 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt"
-	"os"
+	"github.com/mira-moonbeam/go-auth-be/utils/config"
+	"log"
 	"strconv"
 	"strings"
 	"time"
 )
 
+var configMap config.Config
+
+func init() {
+	loadConfig, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	configMap = loadConfig
+}
+
 func GenerateToken(userId uint) (string, error) {
-	tokenLifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
+	tokenLifespan, err := strconv.Atoi(configMap.TokenHourLifespan)
 	if err != nil {
 		return "", err
 	}
@@ -22,7 +34,7 @@ func GenerateToken(userId uint) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(tokenLifespan)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(os.Getenv("API_SECRET")))
+	return token.SignedString([]byte(configMap.ApiSecret))
 }
 
 func IsTokenValid(c *gin.Context) error {
@@ -31,7 +43,7 @@ func IsTokenValid(c *gin.Context) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("API_SECRET")), nil
+		return []byte(configMap.ApiSecret), nil
 	})
 	if err != nil {
 		return err
@@ -57,7 +69,7 @@ func ExtractUserID(c *gin.Context) (uint, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("API_SECRET")), nil
+		return []byte(configMap.ApiSecret), nil
 	})
 	if err != nil {
 		return 0, err

@@ -5,11 +5,22 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
+	"github.com/mira-moonbeam/go-auth-be/utils/config"
 	"log"
-	"os"
 )
 
 var DB *gorm.DB
+
+var configMap config.Config
+
+func init() {
+	loadConfig, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	configMap = loadConfig
+}
 
 func ConnectDatabase() {
 	err := godotenv.Load(".env")
@@ -17,12 +28,12 @@ func ConnectDatabase() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	driver := os.Getenv("DB_DRIVER")
-	host := os.Getenv("DB_HOST")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	name := os.Getenv("DB_NAME")
-	port := os.Getenv("DB_PORT")
+	driver := configMap.DBDriver
+	host := configMap.DBHost
+	user := configMap.DBUser
+	password := configMap.DBPassword
+	name := configMap.DBName
+	port := configMap.DBPort
 
 	dbUrl := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", driver, user, password, host, port, name)
 	DB, err = gorm.Open(driver, dbUrl)
