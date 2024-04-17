@@ -17,7 +17,7 @@ WORKDIR /app
 
 COPY --from=build-stage /docker-ploutline-auth /docker-ploutline-auth
 
-COPY ../../.env .
+COPY .env .
 
 EXPOSE 8081
 
