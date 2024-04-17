@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/joho/godotenv"
 	"github.com/mira-moonbeam/go-auth-be/utils/config"
 	"log"
 )
@@ -23,11 +22,6 @@ func init() {
 }
 
 func ConnectDatabase() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
 	driver := configMap.DBDriver
 	host := configMap.DBHost
 	user := configMap.DBUser
@@ -36,13 +30,14 @@ func ConnectDatabase() {
 	port := configMap.DBPort
 
 	dbUrl := fmt.Sprintf("%s://%s:%s@%s:%s/%s?sslmode=disable", driver, user, password, host, port, name)
+	var err error
 	DB, err = gorm.Open(driver, dbUrl)
 
 	if err != nil {
 		fmt.Println("Cannot connect to database ", driver)
 		log.Fatal("connection error:", err)
 	} else {
-		fmt.Println("We are connected to the database ", driver)
+		fmt.Println("We are connected to the database", driver)
 	}
 
 	DB.AutoMigrate(&User{})
