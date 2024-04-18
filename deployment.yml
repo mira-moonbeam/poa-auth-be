@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ploutline-auth
+  labels:
+    app: ploutline-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ploutline-auth
+  template:
+    metadata:
+      labels:
+        app: ploutline-auth
+    spec:
+      containers:
+        - name: ploutline-auth
+          image: dalo9299/poa-auth-be:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_HOST
+              value: "aws-0-ap-southeast-1.pooler.supabase.com"
+            - name: DB_DRIVER
+              value: "postgres"
+            - name: DB_USER
+              value: "postgres.ftjjkgopcbssmovhebod"
+            - name: DB_PASSWORD
+              value: "P70utl1n30.1"
+            - name: DB_NAME
+              value: "postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: API_SECRET
+              value: "P70utl1n3"
+            - name: TOKEN_HOUR_LIFESPAN
+              value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ploutline-auth-entrypoint
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: ploutline-auth
+  ports:
+    - port: 8081
+      nodePort: 32101

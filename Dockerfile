@@ -7,7 +7,8 @@ COPY ../.. .
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-ploutline-auth
+# Build for macOS
+RUN CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o /docker-ploutline-auth
 
 
 # Deploy application binary into lean image
